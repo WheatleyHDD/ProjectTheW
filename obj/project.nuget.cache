@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "nVfbHoWvQ4wU2b8yTueN0sxWUzp8ekKSCqccCFt95+6lbrFnv6M9zhr/grIpqS66VoifzoPBEjf0pdr/NWSXKg==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\WheatleyHDD\\source\\repos\\ProjectTheW\\ProjectTheW\\ProjectTheW.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\WheatleyHDD\\.nuget\\packages\\humper\\0.5.8\\humper.0.5.8.nupkg.sha512",
+    "C:\\Users\\WheatleyHDD\\.nuget\\packages\\raylib-cs\\4.0.0.1\\raylib-cs.4.0.0.1.nupkg.sha512",
+    "C:\\Users\\WheatleyHDD\\.nuget\\packages\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512"
+  ],
+  "logs": []
+}

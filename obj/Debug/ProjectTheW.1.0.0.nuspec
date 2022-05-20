@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>ProjectTheW</id>
+    <version>1.0.0</version>
+    <authors>ProjectTheW</authors>
+    <description>Package Description</description>
+    <dependencies>
+      <group targetFramework="net6.0">
+        <dependency id="Humper" version="0.5.8" exclude="Build,Analyzers" />
+        <dependency id="Raylib-cs" version="4.0.0.1" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="C:\Users\WheatleyHDD\source\repos\ProjectTheW\ProjectTheW\bin\Debug\net6.0\ProjectTheW.runtimeconfig.json" target="lib\net6.0\ProjectTheW.runtimeconfig.json" />
+    <file src="C:\Users\WheatleyHDD\source\repos\ProjectTheW\ProjectTheW\bin\Debug\net6.0\ProjectTheW.dll" target="lib\net6.0\ProjectTheW.dll" />
+  </files>
+</package>
