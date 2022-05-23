@@ -5,21 +5,25 @@ namespace ProjectTheW.Scenes
     internal class GameOverScreen : Scene
     {
         float timer = 0;
+        string timeElapsed;
 
-        public GameOverScreen() => Ready();
+        public GameOverScreen() : base() { }
 
         public override void Ready()
         {
             base.Ready();
+            timeElapsed = CountDown.GetTime();
+            StatsClass.ResetAll();
+            Raylib.PlaySoundMulti(LoadedSounds.GetSound("gameover"));
         }
 
         public override void Update(float deltaTime)
         {
             base.Update(deltaTime);
-            if (timer < 5) timer += deltaTime;
-            if (timer > 5)
+            if (timer < 3) timer += deltaTime;
+            if (timer > 3)
                 if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT))
-                    Program.current_scene = new MenuScene();
+                    Program.CurrentScene = new MenuScene();
         }
 
         public override void Draw()
@@ -32,10 +36,18 @@ namespace ProjectTheW.Scenes
                 Raylib.GetScreenHeight()/2-24 * (int)Utils.GetScale(),
                 24 * (int)Utils.GetScale(), Color.WHITE);
 
-            var scoreWidth = Raylib.MeasureText("Score: 2334728", 12 * (int)Utils.GetScale());
-            Raylib.DrawText("Score: 2334728", Raylib.GetScreenWidth() / 2 - scoreWidth / 2,
+            var scoreWidth = Raylib.MeasureText("Time: " + timeElapsed, 12 * (int)Utils.GetScale());
+            Raylib.DrawText("Time: " + timeElapsed, Raylib.GetScreenWidth() / 2 - scoreWidth / 2,
                 Raylib.GetScreenHeight() / 2 + 12 * (int)Utils.GetScale(),
                 12 * (int)Utils.GetScale(), Color.WHITE);
+
+            if (timer > 3)
+            {
+                var clickToContinue = Raylib.MeasureText("Click To Continue", 10 * (int)Utils.GetScale());
+                Raylib.DrawText("Click To Continue", Raylib.GetScreenWidth() / 2 - clickToContinue / 2,
+                    Raylib.GetScreenHeight() - 12 * (int)Utils.GetScale(),
+                    10 * (int)Utils.GetScale(), Color.WHITE);
+            }
         }
     }
 }

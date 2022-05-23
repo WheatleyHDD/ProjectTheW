@@ -24,7 +24,7 @@ namespace ProjectTheW.Objects
         /// Создание нового оружия
         /// </summary>
         /// <param name="name">Название</param>
-        /// <param name="sprite">Путь к текстуре</param>
+        /// <param name="sprite">Название текстуры</param>
         /// <param name="initial_ammo">Изначальное количество патрон</param>
         /// <param name="offset">Точка, относительно которой оружие будет вращаться</param>
         /// <param name="shootPoint">Точка, из которой будут вылетать пули</param>
@@ -36,7 +36,7 @@ namespace ProjectTheW.Objects
             WeaponName = name;
             this.shootPoint = shootPoint;
             this.offset = offset;
-            weaponTexture = Raylib.LoadTexture(sprite);
+            weaponTexture = LoadedTextures.GetTexture(sprite);
             Rotation = 0;
             Scale = 1;
         }
@@ -58,7 +58,7 @@ namespace ProjectTheW.Objects
         {
             if (AmmoCount == 0) return;
             var bullet = new Bullet(GetShootPosition(position),
-                new Vector2(8, 8), rotation, 200, Scale);
+                new Vector2(8, 8), rotation, Scale);
             GameScene.AddObjectToPool(bullet);
         }
 

@@ -6,10 +6,11 @@ namespace ProjectTheW.Scenes
 {
     internal class MenuScene : Scene
     {
-        Texture2D buttonWeaponTexture = Raylib.LoadTexture("resources/sprites/menu_weapon_toggles.png");
-        Texture2D buttonTexture = Raylib.LoadTexture("resources/sprites/menu_main_buttons.png");
+        Texture2D buttonWeaponTexture = LoadedTextures.GetTexture("menu_wbuttons");
+        Texture2D buttonTexture = LoadedTextures.GetTexture("menu_buttons");
 
         string logoText = "Project The W";
+        Music music = LoadedMusic.GetMusic("main_menu");
 
         Texture2D panel;
         NPatchInfo panelNpatch;
@@ -26,7 +27,9 @@ namespace ProjectTheW.Scenes
         public override void Ready()
         {
             base.Ready();
-            panel = Raylib.LoadTexture("resources/sprites/panel.png");
+            CountDown.ResetTime();
+            Raylib.PlayMusicStream(music);
+            panel = LoadedTextures.GetTexture("blue_panel");
 
             panelNpatch = new NPatchInfo
             {
@@ -43,6 +46,7 @@ namespace ProjectTheW.Scenes
         public override void Update(float deltaTime)
         {
             base.Update(deltaTime);
+            Raylib.UpdateMusicStream(music);
             bgHue += deltaTime * 4;
             if (bgHue > 360) bgHue -= 360;
             foreach (var button in buttons)
@@ -128,7 +132,11 @@ namespace ProjectTheW.Scenes
             shootgunAnims.Add("PRESSED", new Rectangle(32, 32, 32, 32));
             var shootgun = new ToggleButton(buttonWeaponTexture, shootgunAnims,
                 new Vector2(175, 175 + 36 * Utils.GetScale() * 0), Raylib.GetScreenHeight() / 180,
-                () => { TakeWeapon(0); });
+                (x) => {
+                    if (x) return;
+                    Raylib.PlaySoundMulti(LoadedSounds.GetSound("upgrade"));
+                    TakeWeapon(0);
+                }, false);
             buttonsLeftPanel.Add(shootgun);
 
             Dictionary<string, Rectangle> rifleAnims = new Dictionary<string, Rectangle>();
@@ -136,7 +144,11 @@ namespace ProjectTheW.Scenes
             rifleAnims.Add("PRESSED", new Rectangle(0, 32, 32, 32));
             var rifle = new ToggleButton(buttonWeaponTexture, rifleAnims,
                 new Vector2(175, 175 + 36 * Utils.GetScale() * 1), Raylib.GetScreenHeight() / 180,
-                () => { TakeWeapon(1); });
+                (x) => {
+                    if (x) return;
+                    Raylib.PlaySoundMulti(LoadedSounds.GetSound("upgrade")); 
+                    TakeWeapon(1);
+                }, false);
             buttonsLeftPanel.Add(rifle);
         }
 
@@ -148,11 +160,14 @@ namespace ProjectTheW.Scenes
             playAnims.Add("PRESSED", new Rectangle(0, 15, 34, 15));
             var playButton = new Button(buttonTexture, playAnims, new Vector2(100, Raylib.GetScreenHeight() - 75),
                 Raylib.GetScreenHeight() / 180, () => {
-                    if (selectedWeapon < 0) return;
+                    if (selectedWeapon < 0)
+                    {
+                        Raylib.PlaySoundMulti(LoadedSounds.GetSound("error"));
+                        return;
+                    }
+                    Raylib.StopMusicStream(music);
                     StatsClass.WeaponType = selectedWeapon;
-                    Raylib.UnloadTexture(buttonTexture);
-                    Raylib.UnloadTexture(buttonWeaponTexture);
-                    Program.current_scene = new GameScene();
+                    Program.CurrentScene = new GameScene();
                 });
             buttons.Add(playButton);
 
@@ -160,13 +175,18 @@ namespace ProjectTheW.Scenes
             Dictionary<string, Rectangle> exitAnims = new Dictionary<string, Rectangle>();
             exitAnims.Add("DEFAULT", new Rectangle(34, 0, 27, 15));
             exitAnims.Add("PRESSED", new Rectangle(34, 15, 27, 15));
-            buttons.Add(new Button(buttonTexture, exitAnims,
+            var exitButton = new Button(buttonTexture, exitAnims,
                 new Vector2(playButton.Destination.x + playButton.Destination.width + 15, Raylib.GetScreenHeight() - 75),
-                Raylib.GetScreenHeight() / 180, () => {
-                    Raylib.UnloadTexture(buttonTexture);
-                    Raylib.UnloadTexture(buttonWeaponTexture);
-                    Program.windowAlive = false;
-                }));
+                Raylib.GetScreenHeight() / 180, () => { Program.windowAlive = false; });
+            buttons.Add(exitButton);
+
+            // Кнопка "Settings"
+            Dictionary<string, Rectangle> settAnims = new Dictionary<string, Rectangle>();
+            settAnims.Add("DEFAULT", new Rectangle(229, 0, 50, 15));
+            settAnims.Add("PRESSED", new Rectangle(229, 15, 50, 15));
+            buttons.Add(new Button(buttonTexture, settAnims,
+                new Vector2(exitButton.Destination.x + exitButton.Destination.width + 15, Raylib.GetScreenHeight() - 75),
+                Raylib.GetScreenHeight() / 180, () => { Program.PauseAndSetting.Show(); }));
 
             // Кнопка "Reset"
             Dictionary<string, Rectangle> resetAnims = new Dictionary<string, Rectangle>();
@@ -174,7 +194,10 @@ namespace ProjectTheW.Scenes
             resetAnims.Add("PRESSED", new Rectangle(61, 15, 33, 15));
             buttonsRightPanel.Add(new Button(buttonTexture, resetAnims,
                 new Vector2(Raylib.GetScreenWidth() - 100 * 2 - 33 * Utils.GetScale() / 2, Raylib.GetScreenHeight() - 100 - 20 * Utils.GetScale()),
-                Raylib.GetScreenHeight() / 180, () => { StatsClass.ResetAll(); }));
+                Raylib.GetScreenHeight() / 180, () => {
+                    Raylib.PlaySoundMulti(LoadedSounds.GetSound("reset"));
+                    StatsClass.ResetAll();
+                }));
         }
 
         void CreateStatAddButtons(Texture2D buttonTexture)
@@ -184,10 +207,30 @@ namespace ProjectTheW.Scenes
             addStatAnim.Add("PRESSED", new Rectangle(94, 15, 15, 15));
             OnClick[] actions =
             {
-                () => { StatsClass.AddToStat(0); },
-                () => { StatsClass.AddToStat(1); },
-                () => { StatsClass.AddToStat(2); },
-                () => { StatsClass.AddToStat(3); },
+                () => {
+                    if (StatsClass.AddToStat(0))
+                        Raylib.PlaySoundMulti(LoadedSounds.GetSound("upgrade"));
+                    else
+                        Raylib.PlaySoundMulti(LoadedSounds.GetSound("error"));
+                },
+                () => {
+                    if (StatsClass.AddToStat(1))
+                        Raylib.PlaySoundMulti(LoadedSounds.GetSound("upgrade"));
+                    else
+                        Raylib.PlaySoundMulti(LoadedSounds.GetSound("error"));
+                },
+                () => {
+                    if (StatsClass.AddToStat(2))
+                        Raylib.PlaySoundMulti(LoadedSounds.GetSound("upgrade"));
+                    else
+                        Raylib.PlaySoundMulti(LoadedSounds.GetSound("error"));
+                },
+                () => {
+                    if (StatsClass.AddToStat(3))
+                        Raylib.PlaySoundMulti(LoadedSounds.GetSound("upgrade"));
+                    else
+                        Raylib.PlaySoundMulti(LoadedSounds.GetSound("error"));
+                },
             };
             for (int i = 0; i < 4; i++)
             {
@@ -195,6 +238,14 @@ namespace ProjectTheW.Scenes
                     new Vector2(Raylib.GetScreenWidth() - 100 * 2 - 20 * Utils.GetScale(), 150 + (int)(20 * Utils.GetScale()) * i),
                     Raylib.GetScreenHeight() / 180, actions[i]));
             }
+        }
+        public override void OnChangeScreen()
+        {
+            base.OnChangeScreen();
+            buttons.Clear();
+            buttonsLeftPanel.Clear();
+            buttonsRightPanel.Clear();
+            CreateButtons();
         }
     }
 }

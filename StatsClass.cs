@@ -9,6 +9,7 @@
         public static float PlayerSpeed { get; set; } = 190f;
 
         public static int WeaponType { get; set; } = 0;
+        public static int Level { get; set; } = 1;
 
         public static void ResetAll()
         {
@@ -17,6 +18,7 @@
             BulletPush = 0;
             BulletSpeed = 300f;
             PlayerSpeed = 190f;
+            Level = 1;
         }
 
         public static bool AddToStat(int num)

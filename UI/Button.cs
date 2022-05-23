@@ -4,8 +4,15 @@ using System.Numerics;
 namespace ProjectTheW.UI
 {
     delegate void OnClick();
+    delegate void OnToggleClick(bool enabled);
 
-    internal class Button
+    internal class Buttons
+    { 
+        public virtual void Update() { }
+        public virtual void Draw() { }
+    }
+
+    internal class Button : Buttons
     {
         Texture2D texture;
 
@@ -30,12 +37,12 @@ namespace ProjectTheW.UI
             Destination = new Rectangle(position.X, position.Y, currentFrame.width * scale, currentFrame.height * scale);
         }
 
-        public void Update()
+        public override void Update()
         {
             Destination = new Rectangle(position.X, position.Y, currentFrame.width * scale, currentFrame.height * scale);
             if (Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), Destination))
             {
-                if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
+                if (Raylib.IsMouseButtonReleased(MouseButton.MOUSE_BUTTON_LEFT))
                     if (action != null) action();
 
                 if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT))
@@ -54,6 +61,6 @@ namespace ProjectTheW.UI
             }
         }
 
-        public void Draw() => Raylib.DrawTexturePro(texture, currentFrame, Destination, new Vector2(0, 0), 0, Color.WHITE);
+        public override void Draw() => Raylib.DrawTexturePro(texture, currentFrame, Destination, new Vector2(0, 0), 0, Color.WHITE);
     }
 }

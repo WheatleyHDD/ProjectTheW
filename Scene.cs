@@ -10,5 +10,7 @@ namespace ProjectTheW
         public virtual void Update(float deltaTime) { }
 
         public virtual void Draw() { }
+
+        public virtual void OnChangeScreen() { }
     }
 }

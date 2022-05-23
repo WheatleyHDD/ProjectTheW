@@ -6,18 +6,17 @@ namespace ProjectTheW.Objects
 {
     internal class Bullet : Entity
     {
-        Texture2D sprite = Raylib.LoadTexture("resources/sprites/bullet.png");
+        Texture2D sprite = LoadedTextures.GetTexture("bullet");
 
         float rotation = 0;
         float scale = 1;
         float moveSpeed = StatsClass.BulletSpeed;
         int dmg = StatsClass.BulletDamage;
 
-        public Bullet(Vector2 position, Vector2 size, float rotation, float moveSpeed, float scale)
+        public Bullet(Vector2 position, Vector2 size, float rotation, float scale)
             : base(position - size/2, size, Tags.Bullet)
         {
             this.scale = scale;
-            this.moveSpeed = moveSpeed;
             this.rotation = rotation;
             Ready();
         }
@@ -34,13 +33,15 @@ namespace ProjectTheW.Objects
             velocity = new Vector2((float)Math.Cos(Math.PI / 180 * rotation), (float)Math.Sin(Math.PI / 180 * rotation)) * moveSpeed * scale;
             body.Move(body.X + velocity.X * dt, body.Y + velocity.Y * dt,
                 (collision) => {
-                    if (collision.Other.HasTag(Tags.Player) || collision.Other.HasTag(Tags.Bullet)) return CollisionResponses.None;
+                    if (collision.Other.HasTag(Tags.Player)
+                        || collision.Other.HasTag(Tags.Bullet)
+                        || collision.Other.HasTag(Tags.Loot)) return CollisionResponses.None;
                     if (collision.Other.HasTag(Tags.Enemy) && collision.Other.Data is EnemyClass)
                     {
                         EnemyClass ec = collision.Other.Data as EnemyClass;
                         ec.Hurt(dmg);
                     }
-                    Remove(sprite);
+                    Remove();
                     return CollisionResponses.Cross;
                 });
 

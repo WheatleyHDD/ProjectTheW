@@ -7,16 +7,30 @@ namespace ProjectTheW
     {
         public Camera2D Cam = new Camera2D();
 
-        public Camera()
+        float shakeTimer = 0;
+        int shakeIntensity = 0;
+
+        public Camera(Vector2 startPos)
         {
-            Cam.zoom = 4f;
+            Cam.target = startPos;
+            UpdateZoom();
         }
 
-        public void UpdateCamera(Entity target, int width, int height)
+        public void UpdateCamera(Entity player, float dt, int width, int height)
         {
-            Cam.target = target.position;
-            Cam.offset = new Vector2(width / 2.0f, height / 2.0f);
+            if (shakeTimer > 0)
+                shakeTimer -= dt;
+            else
+                shakeIntensity = 0;
+
+            Cam.offset = new Vector2(
+                width / 2.0f + Raylib.GetRandomValue(-shakeIntensity, shakeIntensity),
+                height / 2.0f + Raylib.GetRandomValue(-shakeIntensity, shakeIntensity)
+            );
             float minX = 0, minY = 0, maxX = 768, maxY = 768;
+
+            Cam.target.X = Utils.Lerp(Cam.target.X, player.position.X, 16 * dt);
+            Cam.target.Y = Utils.Lerp(Cam.target.Y, player.position.Y, 16 * dt);
 
             Vector2 max = Raylib.GetWorldToScreen2D(new Vector2(maxX, maxY), Cam);
             Vector2 min = Raylib.GetWorldToScreen2D(new Vector2(minX, minY), Cam);
@@ -25,6 +39,14 @@ namespace ProjectTheW
             if (max.Y < height) Cam.offset.Y = height - (max.Y - height / 2);
             if (min.X > 0) Cam.offset.X = width / 2 - min.X;
             if (min.Y > 0) Cam.offset.Y = height / 2 - min.Y;
+        }
+
+        public void UpdateZoom() => Cam.zoom = Utils.GetScale() * 3.5f / 4f;
+
+        public void Shake(float time, int intensity)
+        {
+            shakeTimer = time;
+            shakeIntensity = intensity;
         }
     }
 }

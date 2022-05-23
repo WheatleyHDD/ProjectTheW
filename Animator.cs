@@ -12,7 +12,7 @@ namespace ProjectTheW
 
         Rectangle currFrameRect;
         int currentFrame;
-        int framesCounter;
+        float framesCounter;
         Vector2 frameCount;
 
         int currFlipH = 1;
@@ -79,16 +79,19 @@ namespace ProjectTheW
         /// </summary>
         public Rectangle GetFrame()
         {
-            framesCounter++;
-
-            if (framesCounter >= (60 / framesSpeed))
+            if (!Program.Paused)
             {
-                framesCounter = 0;
-                currentFrame++;
+                framesCounter += Raylib.GetFrameTime();
 
-                if (currentFrame > maxFrame) currentFrame = 0;
+                if (framesCounter >= framesSpeed/60)
+                {
+                    framesCounter = 0;
+                    currentFrame++;
 
-                currFrameRect.x = currentFrame * texture.width / frameCount.X;
+                    if (currentFrame > maxFrame) currentFrame = 0;
+
+                    currFrameRect.x = currentFrame * texture.width / frameCount.X;
+                }
             }
 
             return currFrameRect;

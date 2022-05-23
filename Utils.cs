@@ -17,6 +17,9 @@ namespace ProjectTheW
             float distance = (2.0f * difference % (float)Math.Tau) - difference;
             return p_from + distance * p_weight;
         }
+
         public static float GetScale() => Raylib.GetScreenHeight() / 180;
+
+        public static float Lerp(float from, float to, float delta) => from + (to - from) * delta;
     }
 }

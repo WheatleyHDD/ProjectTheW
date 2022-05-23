@@ -12,6 +12,13 @@ namespace ProjectTheW.Objects
         Animator animator;
 
         public float moveSpeed = StatsClass.PlayerSpeed;
+        public bool died = false;
+        float hurtTimer = 0;
+
+        float darkScreenTimer = 0;
+
+        float hurtFramesCounter = 0;
+        Color currHurtColor = Color.RED;
 
         Rectangle animFrame;
         Vector2 spriteOffset;
@@ -23,6 +30,7 @@ namespace ProjectTheW.Objects
         public Player(Vector2 position, Camera cam)
             : base(position, new Vector2(10, 10), Tags.Player)
         {
+            body.Data = this;
             currentCamera = cam;
             Ready();
         }
@@ -35,8 +43,8 @@ namespace ProjectTheW.Objects
             anims.Add("idle", new Animation(24, 4));
             anims.Add("walk", new Animation(48, 4));
 
-            Texture2D texture = Raylib.LoadTexture("resources/sprites/base.png");
-            animator = new Animator(texture, new Vector2(16, 24), anims, "idle", 45/60f);
+            Texture2D texture = LoadedTextures.GetTexture("player");
+            animator = new Animator(texture, new Vector2(16, 24), anims, "idle", 5f);
 
             spriteOffset = new Vector2(-3, -12);
 
@@ -53,10 +61,17 @@ namespace ProjectTheW.Objects
 
         public override void Update(float dt)
         {
+            if (died)
+            {
+                DarkTimerCalc(dt);
+                return;
+            }
             animFrame = animator.GetFrame();
+            HurtTimerCalc(dt);
             base.Update(dt);
             Controls(dt);
-            Animate();
+            WeaponControl(dt);
+            if (dt > 0) Animate();
             
             position = new Vector2(body.X, body.Y);
         }
@@ -79,11 +94,22 @@ namespace ProjectTheW.Objects
             body.Move(body.X + velocity.X * dt, body.Y + velocity.Y * dt, (collision) =>
             {
                 if (collision.Other.HasTag(Tags.Solid)) return CollisionResponses.Slide;
+                if (collision.Other.HasTag(Tags.Loot) && collision.Other.Data is BulletLoot)
+                {
+                    BulletLoot bl = (BulletLoot)collision.Other.Data;
+                    currentWeapon.AddAmmo(bl.AmmoCount);
+                    bl.Delete();
+                    Raylib.PlaySound(LoadedSounds.GetSound("pickup"));
+                    return CollisionResponses.Cross;
+                }
                 return CollisionResponses.None;
             });
+        }
 
+        void WeaponControl(float dt)
+        {
             // Вращение оружия
-            if (currentWeapon != null)
+            if (currentWeapon != null && dt > 0)
             {
                 var globalMousePos = Raylib.GetScreenToWorld2D(Raylib.GetMousePosition(), currentCamera.Cam);
                 var katet1 = globalMousePos.X - position.X - (hitbox.Size.X / 2);
@@ -103,7 +129,7 @@ namespace ProjectTheW.Objects
 
             // стрельба
             currentWeapon?.CoolDownCalc(dt);
-            if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT))
+            if (dt > 0 && Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT))
                 currentWeapon?.Shoot(position);
         }
         
@@ -125,14 +151,49 @@ namespace ProjectTheW.Objects
             }
         }
 
+        void HurtTimerCalc(float dt)
+        {
+            if (hurtTimer <= 0) return;
+            hurtTimer -= dt;
+        }
+
+        void DarkTimerCalc(float dt)
+        {
+            if (darkScreenTimer >= 3) {
+                Program.CurrentScene = new Scenes.GameOverScreen();
+                return;
+            }
+            darkScreenTimer += dt;
+        }
+
+        public void Hurt()
+        {
+            if (hurtTimer > 0) return;
+            Raylib.PlaySoundMulti(LoadedSounds.GetSound("hit"));
+            StatsClass.PlayerHealth -= 1;
+            hurtTimer = 2;
+            if (StatsClass.PlayerHealth <= 0) Die();
+            else currentCamera.Shake(0.5f, 15);
+        }
+
+        public void Die()
+        {
+            currentCamera.Shake(3f, 35);
+            died = true;
+            Raylib.PlaySoundMulti(LoadedSounds.GetSound("defeat"));
+        }
+
         public override void Draw()
         {
-            Raylib.DrawTextureRec(animator.GetTexture(), animFrame,
-                position + spriteOffset, Color.WHITE);
+            if (died) Raylib.DrawTexture(LoadedTextures.GetTexture("player_d"), (int)position.X, (int)position.Y, Color.RED);
+            else
+            {
+                Raylib.DrawTextureRec(animator.GetTexture(), animFrame,
+                    position + spriteOffset, hurtTimer <= 0 ? Color.WHITE : GetHurtColor());
 
-            if (currentWeapon != null)
-                currentWeapon.Draw(position);
-
+                if (currentWeapon != null)
+                    currentWeapon.Draw(position);
+            }
             base.Draw();
         }
 
@@ -146,12 +207,39 @@ namespace ProjectTheW.Objects
 
         public void DrawUI()
         {
-            Raylib.DrawText(currentWeapon.WeaponName, 12, Raylib.GetScreenHeight()-42, 32, Color.WHITE);
-            Raylib.DrawText("Ammo: " + currentWeapon.AmmoCount.ToString(), 12, Raylib.GetScreenHeight() - 74, 20, Color.WHITE);
+            Raylib.DrawText(currentWeapon.WeaponName, 12, Raylib.GetScreenHeight()-42, 8 * (int)Utils.GetScale(), Color.WHITE);
+            Raylib.DrawText("Ammo: " + currentWeapon.AmmoCount.ToString(), 12, Raylib.GetScreenHeight() - 74, 5 * (int)Utils.GetScale(), Color.WHITE);
 
             var scale = Utils.GetScale() * 2 / 3;
             for (int heartI = 0; heartI < StatsClass.PlayerHealth; heartI++)
                 Raylib.DrawTextureEx(heartTexture, new Vector2(25 + 24 * scale * heartI, 25), 0, scale, Color.WHITE);
+
+            if (died) DrawDeathDarker();
+        }
+        
+        void DrawDeathDarker()
+        {
+            Color newColor = new Color(0, 0, 0, (int)(Math.Min(darkScreenTimer, 3) * 255/3));
+            Raylib.DrawRectangle(0, 0, Raylib.GetScreenWidth(), Raylib.GetScreenHeight()*2, newColor);
+        }
+
+        public Color GetHurtColor()
+        {
+            Color newColor = currHurtColor;
+            if (!Program.Paused)
+            {
+                hurtFramesCounter += Raylib.GetFrameTime();
+
+                if (hurtFramesCounter >= 0.125f)
+                {
+                    hurtFramesCounter = 0;
+
+                    if (currHurtColor.ToString() == Color.WHITE.ToString()) newColor = Color.RED;
+                    else newColor = Color.WHITE;
+                    currHurtColor = newColor;
+                }
+            }
+            return newColor;
         }
     }
 }

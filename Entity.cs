@@ -31,11 +31,10 @@ namespace ProjectTheW
             hitbox.Position = position;
         }
 
-        public void Remove(Texture2D sprite)
+        public void Remove()
         {
             Scenes.GameScene.world.Remove(body);
             Scenes.GameScene.RemoveObjectFromPool(this);
-            Raylib.UnloadTexture(sprite);
         }
     }
 }

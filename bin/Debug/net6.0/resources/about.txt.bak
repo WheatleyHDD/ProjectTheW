@@ -1,0 +1,15 @@
+﻿Game by Dmitriy Volkov
+
+Libraries used:
+- Raylib-cs (https://github.com/ChrisDill/Raylib-cs)
+- Humper (https://github.com/dotnet-ad/Humper)
+
+Sounds from:
+- Open Hexagon
+- OpenGameArt.org
+
+Music used:
+- TUNE13 from Tempest 2000
+- "Descent" from Iconoclasts
+
+Created for the subject "Programming in C#"
