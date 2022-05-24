@@ -25,6 +25,9 @@ namespace ProjectTheW
             loadedSprites.Add("blue_panel", Raylib.LoadTexture("resources/sprites/panel.png"));
             loadedSprites.Add("menu_buttons", Raylib.LoadTexture("resources/sprites/menu_main_buttons.png"));
             loadedSprites.Add("menu_wbuttons", Raylib.LoadTexture("resources/sprites/menu_weapon_toggles.png"));
+            loadedSprites.Add("gems1", Raylib.LoadTexture("resources/sprites/gems/1.png"));
+            loadedSprites.Add("gems2", Raylib.LoadTexture("resources/sprites/gems/2.png"));
+            loadedSprites.Add("gems3", Raylib.LoadTexture("resources/sprites/gems/3.png"));
         }
 
         public static Texture2D GetTexture(string name) => loadedSprites[name];

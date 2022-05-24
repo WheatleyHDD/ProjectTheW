@@ -170,13 +170,8 @@ namespace ProjectTheW.Scenes
                 Raylib.GetScreenHeight() - MARGIN * 2),
                 new Vector2(), 0, Color.WHITE);
 
-            var i = -1;
-            foreach(string t in aboutText.Split("\n"))
-            {
-                i++;
-                Raylib.DrawText(t, Raylib.GetScreenWidth() / 2 + PADDING, MARGIN + PADDING + 5 * (int)Utils.GetScale() * i,
-                    5 * (int)Utils.GetScale(), Color.BLACK);
-            }
+            Raylib.DrawText(aboutText, Raylib.GetScreenWidth() / 2 + PADDING, MARGIN + PADDING,
+                5 * (int)Utils.GetScale(), Color.BLACK);
         }
 
         public void Show() => Visible = true;

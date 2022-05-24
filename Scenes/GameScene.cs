@@ -8,6 +8,7 @@ namespace ProjectTheW.Scenes
     internal class GameScene : Scene
     {
         static public World world = new World(768, 768, 16);
+        static Upgrader up;
 
         Player player;
         Camera camera = new Camera(new Vector2(384, 384));
@@ -19,8 +20,9 @@ namespace ProjectTheW.Scenes
         static public List<Entity> objectPool = new List<Entity>();
         static List<Entity> toRemovePool = new List<Entity>();
 
-        public int PlayerLevel { get; private set; }
-        public int LevelScore { get; set; }
+        const int ForLevelMult = 10;
+        public static int PlayerLevel { get; private set; }
+        public static int LevelScore { get; set; }
 
         float stSimple = 5;
         float stFast = 15;
@@ -45,12 +47,15 @@ namespace ProjectTheW.Scenes
             player = new Player(new Vector2(384, 384), camera);
             roomTexture = Raylib.LoadTexture("resources/rooms/room1.png");
 
+            up = new Upgrader(player);
+
             Raylib.PlayMusicStream(music);
         }
 
         public override void Update(float deltaTime)
         {
-            if (Raylib.IsKeyPressed(KeyboardKey.KEY_ESCAPE) && !player.died)
+            if (Raylib.IsKeyPressed(KeyboardKey.KEY_ESCAPE)
+                && !player.died && !up.Visible)
             {
                 if (!Program.PauseAndSetting.Visible)
                 {
@@ -66,6 +71,8 @@ namespace ProjectTheW.Scenes
             base.Update(deltaTime);
             player.Update(deltaTime);
             camera.UpdateCamera(player, deltaTime, Raylib.GetScreenWidth(), Raylib.GetScreenHeight());
+
+            up.Update(Raylib.GetFrameTime());
 
             if (!Program.Paused)
             {
@@ -88,10 +95,10 @@ namespace ProjectTheW.Scenes
             stGiant -= dt;
             stLevelUp -= dt;
             stBullets -= dt;
-            if (stSimple < 0) ResetTimerAndSpawn(ref stSimple, 5, "simple");
-            if (stFast < 0) ResetTimerAndSpawn(ref stFast, 15, "mini");
-            if (stWizard < 0) ResetTimerAndSpawn(ref stWizard, 25, "wizard");
-            if (stGiant < 0) ResetTimerAndSpawn(ref stGiant, 45, "giant");
+            if (stSimple < 0) ResetTimerAndSpawn(ref stSimple, Math.Max(5f - StatsClass.Level/10f, 1), "simple");
+            if (stFast < 0) ResetTimerAndSpawn(ref stFast, Math.Max(5f - StatsClass.Level / 10f, 5), "mini");
+            if (stWizard < 0) ResetTimerAndSpawn(ref stWizard, Math.Max(5f - StatsClass.Level / 10f, 8), "wizard");
+            if (stGiant < 0) ResetTimerAndSpawn(ref stGiant, Math.Max(5f - StatsClass.Level / 10f, 15), "giant");
             if (stBullets < 0) ResetTimerAndSpawn(ref stBullets, Raylib.GetRandomValue(1, 15), "bullets");
             if (stLevelUp < 0)
             {
@@ -116,6 +123,10 @@ namespace ProjectTheW.Scenes
             Raylib.EndMode2D();
 
             DrawTime();
+            DrawProgress();
+            DrawSomeInfo();
+            up.Draw();
+
             player.DrawUI();
             //player.DebugDraw();
         }
@@ -125,6 +136,28 @@ namespace ProjectTheW.Scenes
             string time = CountDown.GetTime();
             var middle = Raylib.MeasureText(time, 12 * (int)Utils.GetScale()) / 2;
             Raylib.DrawText(time, Raylib.GetScreenWidth() / 2 - middle, 14 * (int)Utils.GetScale(), 12 * (int)Utils.GetScale(), Color.WHITE);
+        }
+
+        void DrawSomeInfo()
+        {
+            var txtPlayerLvl = "Player Level: " + PlayerLevel.ToString();
+            var txtLvl = "Difficulty: " + StatsClass.Level.ToString();
+
+            var mPlayerLvl = Raylib.MeasureText(txtPlayerLvl, 8 * (int)Utils.GetScale());
+            var mLvl = Raylib.MeasureText(txtLvl, 8 * (int)Utils.GetScale());
+
+            Raylib.DrawText(txtPlayerLvl, Raylib.GetScreenWidth() - mPlayerLvl,
+                Raylib.GetScreenHeight() - 16 * (int)Utils.GetScale(),
+                8 * (int)Utils.GetScale(), Color.WHITE);
+            Raylib.DrawText(txtLvl, Raylib.GetScreenWidth() - mLvl,
+                Raylib.GetScreenHeight() - 8 * (int)Utils.GetScale(),
+                8 * (int)Utils.GetScale(), Color.WHITE);
+        }
+
+        void DrawProgress()
+        {
+            Raylib.DrawRectangle(0, 0, Raylib.GetScreenWidth(), 4 * (int)Utils.GetScale(), Color.BLACK);
+            Raylib.DrawRectangle(0, 0, Raylib.GetScreenWidth() * LevelScore / (1 + ForLevelMult * PlayerLevel), 4 * (int)Utils.GetScale(), Color.RED);
         }
 
         static public void AddObjectToPool(Entity entity) => objectPool.Add(entity);
@@ -158,11 +191,14 @@ namespace ProjectTheW.Scenes
         public override void OnChangeScreen()
         {
             base.OnChangeScreen();
+            up.OnChangeScreen();
             camera.UpdateZoom();
         }
 
         void ResetAll()
         {
+            foreach (var obj in objectPool)
+                obj.Remove();
             objectPool.Clear();
             toRemovePool.Clear();
             stSimple = 5;
@@ -174,6 +210,18 @@ namespace ProjectTheW.Scenes
             PlayerLevel = 0;
             LevelScore = 0;
             Raylib.StopMusicStream(music);
+        }
+
+        public static void AddLevelScore(int score)
+        {
+            LevelScore += score;
+            if (LevelScore >= 1 + ForLevelMult * PlayerLevel)
+            {
+                var diff = Math.Max((1 + ForLevelMult * PlayerLevel) - LevelScore, 0);
+                PlayerLevel++;
+                LevelScore = diff;
+                up.Show();
+            }
         }
     }
 }

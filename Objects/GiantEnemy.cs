@@ -8,6 +8,7 @@ namespace ProjectTheW.Objects
         public GiantEnemy(Vector2 position, Player player)
             : base(position, new Vector2(18, 28), player)
         {
+            weight = 3;
             acceleration = 2500f;
             spriteOffset = new Vector2(-7, -3);
             hp = 12 * StatsClass.Level;

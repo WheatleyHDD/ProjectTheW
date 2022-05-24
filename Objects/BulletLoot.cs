@@ -20,7 +20,5 @@ namespace ProjectTheW.Objects
             base.Draw();
             Raylib.DrawTexture(sprite, (int)position.X, (int)position.Y, Color.WHITE);
         }
-
-        public void Delete() => Remove();
     }
 }

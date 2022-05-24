@@ -44,5 +44,27 @@
             }
             return true;
         }
+
+        public static void AddToStatInGame(int num)
+        {
+            switch (num)
+            {
+                case 0:
+                    BulletDamage += 1;
+                    break;
+                case 1:
+                    BulletSpeed += 50f;
+                    break;
+                case 2:
+                    BulletPush += 1;
+                    break;
+                case 3:
+                    PlayerSpeed += 10f;
+                    break;
+                case 4:
+                    PlayerHealth++;
+                    break;
+            }
+        }
     }
 }

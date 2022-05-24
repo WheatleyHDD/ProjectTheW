@@ -9,6 +9,7 @@ namespace ProjectTheW.Objects
         public MiniFollowEnemy(Vector2 position, Player player)
             : base(position, new Vector2(10, 10), player)
         {
+            weight = 1;
             moveSpeed = 110f;
             spriteOffset = new Vector2(-4, -4);
             hp = 1 * StatsClass.Level;

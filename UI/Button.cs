@@ -15,9 +15,10 @@ namespace ProjectTheW.UI
     internal class Button : Buttons
     {
         Texture2D texture;
+        public readonly Vector2 startPosition;
 
         Dictionary<string, Rectangle> anims;
-        Vector2 position;
+        public Vector2 position;
         readonly float scale;
         public Rectangle Destination { get; private set; }
         readonly OnClick action;
@@ -28,6 +29,7 @@ namespace ProjectTheW.UI
             Vector2 position, float scale, OnClick onClicked)
         {
             this.texture = texture;
+            startPosition = position;
             this.position = position;
             this.scale = scale;
             action = onClicked;

@@ -1,6 +1,5 @@
 ﻿using Raylib_cs;
 using System.Numerics;
-using Humper;
 using Humper.Responses;
 
 namespace ProjectTheW.Objects
@@ -94,13 +93,21 @@ namespace ProjectTheW.Objects
             body.Move(body.X + velocity.X * dt, body.Y + velocity.Y * dt, (collision) =>
             {
                 if (collision.Other.HasTag(Tags.Solid)) return CollisionResponses.Slide;
-                if (collision.Other.HasTag(Tags.Loot) && collision.Other.Data is BulletLoot)
+                if (collision.Other.HasTag(Tags.Loot))
                 {
-                    BulletLoot bl = (BulletLoot)collision.Other.Data;
-                    currentWeapon.AddAmmo(bl.AmmoCount);
-                    bl.Delete();
-                    Raylib.PlaySound(LoadedSounds.GetSound("pickup"));
-                    return CollisionResponses.Cross;
+                    if (collision.Other.Data is BulletLoot bl)
+                    {
+                        currentWeapon.AddAmmo(bl.AmmoCount);
+                        bl.Remove();
+                        Raylib.PlaySound(LoadedSounds.GetSound("pickup"));
+                        return CollisionResponses.Cross;
+                    } else if (collision.Other.Data is GemsLoot gl)
+                    {
+                        Scenes.GameScene.AddLevelScore(gl.Cost);
+                        gl.Remove();
+                        Raylib.PlaySound(LoadedSounds.GetSound("pickup"));
+                        return CollisionResponses.Cross;
+                    }
                 }
                 return CollisionResponses.None;
             });
@@ -241,5 +248,8 @@ namespace ProjectTheW.Objects
             }
             return newColor;
         }
+
+        public int GetWeaponAmmo() => currentWeapon.AmmoCount;
+        public void AddWeaponAmmo(int count) => currentWeapon.AddAmmo(count);
     }
 }
