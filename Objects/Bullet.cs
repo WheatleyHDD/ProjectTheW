@@ -8,10 +8,10 @@ namespace ProjectTheW.Objects
     {
         Texture2D sprite = LoadedTextures.GetTexture("bullet");
 
-        float rotation = 0;
-        float scale = 1;
-        float moveSpeed = StatsClass.BulletSpeed;
-        int dmg = StatsClass.BulletDamage;
+        readonly float rotation = 0;
+        readonly float scale = 1;
+        readonly float moveSpeed = StatsClass.BulletSpeed;
+        readonly int dmg = StatsClass.BulletDamage;
 
         public Bullet(Vector2 position, Vector2 size, float rotation, float scale)
             : base(position - size/2, size, Tags.Bullet)
@@ -36,12 +36,12 @@ namespace ProjectTheW.Objects
                     if (collision.Other.HasTag(Tags.Player)
                         || collision.Other.HasTag(Tags.Bullet)
                         || collision.Other.HasTag(Tags.Loot)) return CollisionResponses.None;
-                    if (collision.Other.HasTag(Tags.Enemy) && collision.Other.Data is EnemyClass)
+                    if (collision.Other.HasTag(Tags.Enemy) && collision.Other.Data is EnemyClass ec)
                     {
-                        EnemyClass ec = collision.Other.Data as EnemyClass;
                         ec.Hurt(dmg);
+                        Remove();
                     }
-                    Remove();
+                    if (collision.Other.HasTag(Tags.Solid)) Remove();
                     return CollisionResponses.Cross;
                 });
 

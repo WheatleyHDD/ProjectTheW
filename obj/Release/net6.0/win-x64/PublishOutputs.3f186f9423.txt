@@ -1,0 +1,3 @@
+C:\Users\WheatleyHDD\source\repos\ProjectTheW\ProjectTheW\bin\Release\net6.0\publish\win-x64\ProjectTheW.pdb
+C:\Users\WheatleyHDD\source\repos\ProjectTheW\ProjectTheW\bin\Release\net6.0\publish\win-x64\raylib.dll
+C:\Users\WheatleyHDD\source\repos\ProjectTheW\ProjectTheW\bin\Release\net6.0\publish\win-x64\ProjectTheW.exe

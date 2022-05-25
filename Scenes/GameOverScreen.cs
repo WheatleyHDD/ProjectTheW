@@ -22,7 +22,7 @@ namespace ProjectTheW.Scenes
             base.Update(deltaTime);
             if (timer < 3) timer += deltaTime;
             if (timer > 3)
-                if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT))
+                if (Raylib.IsKeyReleased(KeyboardKey.KEY_SPACE))
                     Program.CurrentScene = new MenuScene();
         }
 
@@ -43,8 +43,8 @@ namespace ProjectTheW.Scenes
 
             if (timer > 3)
             {
-                var clickToContinue = Raylib.MeasureText("Click To Continue", 10 * (int)Utils.GetScale());
-                Raylib.DrawText("Click To Continue", Raylib.GetScreenWidth() / 2 - clickToContinue / 2,
+                var clickToContinue = Raylib.MeasureText("Click \"Space\" To Continue", 10 * (int)Utils.GetScale());
+                Raylib.DrawText("Click \"Space\" To Continue", Raylib.GetScreenWidth() / 2 - clickToContinue / 2,
                     Raylib.GetScreenHeight() - 12 * (int)Utils.GetScale(),
                     10 * (int)Utils.GetScale(), Color.WHITE);
             }

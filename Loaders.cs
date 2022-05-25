@@ -5,7 +5,10 @@ namespace ProjectTheW
     internal class LoadedTextures
     {
         public static Dictionary<string, Texture2D> loadedSprites = new Dictionary<string, Texture2D>();
-        
+
+        /// <summary>
+        /// Загрузка всех текстур (спрайов)
+        /// </summary>
         public static void LoadAll()
         {
             loadedSprites.Add("enemy1", Raylib.LoadTexture("resources/sprites/enemy1.png"));
@@ -44,6 +47,9 @@ namespace ProjectTheW
         public static Dictionary<string, Sound> loadedSounds = new Dictionary<string, Sound>();
         public static int CurrentVolume { get; private set; } = 100;
 
+        /// <summary>
+        /// Загрузка всех звуков
+        /// </summary>
         public static void LoadAll()
         {
             loadedSounds.Add("pickup", Raylib.LoadSound("resources/sounds/pickup.wav"));
@@ -56,6 +62,8 @@ namespace ProjectTheW
             loadedSounds.Add("upgrade", Raylib.LoadSound("resources/sounds/upgrade.wav"));
             loadedSounds.Add("defeat", Raylib.LoadSound("resources/sounds/defeat.wav"));
             loadedSounds.Add("hit", Raylib.LoadSound("resources/sounds/hit.wav"));
+            loadedSounds.Add("powerup", Raylib.LoadSound("resources/sounds/powerup.wav"));
+            loadedSounds.Add("coin", Raylib.LoadSound("resources/sounds/coin.wav"));
         }
 
         public static Sound GetSound(string name) => loadedSounds[name];
@@ -81,6 +89,9 @@ namespace ProjectTheW
         public static Dictionary<string, Music> loadedMusic = new Dictionary<string, Music>();
         public static int CurrentVolume { get; private set; } = 100;
 
+        /// <summary>
+        /// Загрузка всей музыки
+        /// </summary>
         public static void LoadAll()
         {
             loadedMusic.Add("main_menu", Raylib.LoadMusicStream("resources/music/TUNE13.ogg"));

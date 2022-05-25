@@ -10,18 +10,30 @@ namespace ProjectTheW
         float shakeTimer = 0;
         int shakeIntensity = 0;
 
+        float actualZoom;
+
         public Camera(Vector2 startPos)
         {
             Cam.target = startPos;
+            Cam.zoom = 20;
             UpdateZoom();
         }
 
+        /// <summary>
+        /// Обновление положения камеры
+        /// </summary>
+        /// <param name="player">игрок</param>
+        /// <param name="dt">дельта</param>
+        /// <param name="width">Длина комнаты</param>
+        /// <param name="height">Ширина комнаты</param>
         public void UpdateCamera(Entity player, float dt, int width, int height)
         {
             if (shakeTimer > 0)
                 shakeTimer -= dt;
             else
                 shakeIntensity = 0;
+
+            Cam.zoom = Utils.Lerp(Cam.zoom, actualZoom, 5 * dt);
 
             Cam.offset = new Vector2(
                 width / 2.0f + Raylib.GetRandomValue(-shakeIntensity, shakeIntensity),
@@ -41,7 +53,7 @@ namespace ProjectTheW
             if (min.Y > 0) Cam.offset.Y = height / 2 - min.Y;
         }
 
-        public void UpdateZoom() => Cam.zoom = Utils.GetScale() * 3.5f / 4f;
+        public void UpdateZoom() => actualZoom = Utils.GetScale() * 3.5f / 4f;
 
         public void Shake(float time, int intensity)
         {

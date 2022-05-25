@@ -4,6 +4,10 @@
     {
         static float time = 0;
 
+        /// <summary>
+        /// Получить пройденное время
+        /// </summary>
+        /// <returns>Время в строчном формате</returns>
         public static string GetTime()
         {
             var seconds = (int)time % 60;

@@ -1,7 +1,6 @@
 ﻿using ProjectTheW.UI;
 using Raylib_cs;
 using System.Numerics;
-using System.Reflection;
 
 namespace ProjectTheW.Scenes
 {
@@ -13,14 +12,16 @@ namespace ProjectTheW.Scenes
         string aboutText;
         bool aboutVisible;
 
-        readonly List<Buttons> buttons = new List<Buttons>();
+        readonly List<Buttons> buttons = new();
         ToggleButton fsCheck;
+        ToggleButton fpsCheck;
 
         const int MARGIN = 50;
         const int PADDING = 25;
 
         public bool Visible { get; private set; }
         public bool Fullscreen { get; private set; }
+        public bool HighFPS { get; private set; }
 
         public PauseSettingAbout() : base() { }
 
@@ -28,7 +29,7 @@ namespace ProjectTheW.Scenes
         {
             base.Ready();
 
-            var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "resources", "about.txt");
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "resources", "about.txt");
             aboutText = File.ReadAllText(path);
             aboutText = aboutText.Replace("\r", "");
 
@@ -84,8 +85,16 @@ namespace ProjectTheW.Scenes
                     Fullscreen = !Fullscreen;
                 });
 
-            var volSndMinus = SettButton(165, 15,
+            fpsCheck = SettCheckButton(214, 15,
                 new Vector2(MARGIN + PADDING, fsCheck.Destination.y + fsCheck.Destination.height + PADDING),
+                (e) => {
+                    if (HighFPS) Raylib.SetTargetFPS(60);
+                    else Raylib.SetTargetFPS(0);
+                    HighFPS = !HighFPS;
+                });
+
+            var volSndMinus = SettButton(165, 15,
+                new Vector2(MARGIN + PADDING, fpsCheck.Destination.y + fpsCheck.Destination.height + PADDING),
                 () => {
                     if (LoadedSounds.SetVolume(LoadedSounds.CurrentVolume - 10))
                         Raylib.PlaySoundMulti(LoadedSounds.GetSound("reset"));
@@ -95,7 +104,7 @@ namespace ProjectTheW.Scenes
             var volSndText = (int)(18 * 1.5f * Utils.GetScale()) +
                 Raylib.MeasureText("Sounds Volume: " + LoadedSounds.CurrentVolume + "%", 7 * (int)Utils.GetScale());
             var volSndPlus = SettButton(150, 15,
-                new Vector2(MARGIN + PADDING + volSndText, fsCheck.Destination.y + fsCheck.Destination.height + PADDING),
+                new Vector2(MARGIN + PADDING + volSndText, fpsCheck.Destination.y + fpsCheck.Destination.height + PADDING),
                 () => {
                     if (LoadedSounds.SetVolume(LoadedSounds.CurrentVolume + 10))
                         Raylib.PlaySoundMulti(LoadedSounds.GetSound("upgrade"));
@@ -129,6 +138,9 @@ namespace ProjectTheW.Scenes
             if (Fullscreen) fsCheck.Enable();
             else fsCheck.Reset();
 
+            if (HighFPS) fpsCheck.Enable();
+            else fpsCheck.Reset();
+
             foreach (var button in buttons.ToArray())
                 button.Update();
         }
@@ -154,11 +166,14 @@ namespace ProjectTheW.Scenes
 
             Raylib.DrawText("Is Fullscreen?", MARGIN + PADDING + 18 * (int)Utils.GetScale(),
                 MARGIN + PADDING + 4 * (int)Utils.GetScale(), 7 * (int)Utils.GetScale(), Color.BLACK);
-            Raylib.DrawText("Sounds Volume: " + LoadedSounds.CurrentVolume + "%", MARGIN + PADDING + 18 * (int)Utils.GetScale(),
+            Raylib.DrawText("Disable FPS Lock?", MARGIN + PADDING + 18 * (int)Utils.GetScale(),
                 MARGIN + PADDING + 4 * (int)Utils.GetScale() + ((int)fsCheck.Destination.height + PADDING) * 1,
                 7 * (int)Utils.GetScale(), Color.BLACK);
-            Raylib.DrawText("Music Volume: " + LoadedMusic.CurrentVolume + "%", MARGIN + PADDING + 18 * (int)Utils.GetScale(),
+            Raylib.DrawText("Sounds Volume: " + LoadedSounds.CurrentVolume + "%", MARGIN + PADDING + 18 * (int)Utils.GetScale(),
                 MARGIN + PADDING + 4 * (int)Utils.GetScale() + ((int)fsCheck.Destination.height + PADDING) * 2,
+                7 * (int)Utils.GetScale(), Color.BLACK);
+            Raylib.DrawText("Music Volume: " + LoadedMusic.CurrentVolume + "%", MARGIN + PADDING + 18 * (int)Utils.GetScale(),
+                MARGIN + PADDING + 4 * (int)Utils.GetScale() + ((int)fsCheck.Destination.height + PADDING) * 3,
                 7 * (int)Utils.GetScale(), Color.BLACK);
         }
 

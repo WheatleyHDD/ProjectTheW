@@ -11,6 +11,9 @@ namespace ProjectTheW
 
         public virtual void Draw() { }
 
+        /// <summary>
+        /// Необходима для перестройки UI под новое разрешение экрана
+        /// </summary>
         public virtual void OnChangeScreen() { }
     }
 }

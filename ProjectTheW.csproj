@@ -1,17 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <NeutralLanguage>aa-ER</NeutralLanguage>
+    <NeutralLanguage>en</NeutralLanguage>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <StartupObject>ProjectTheW.Program</StartupObject>
+    <Authors>WheatleyHDD</Authors>
+    <Product>Project The W</Product>
+    <Description>Simple 2D shooter</Description>
+    <PackageIcon>thew.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Humper" Version="0.5.8" />
     <PackageReference Include="Raylib-cs" Version="4.0.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="thew.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

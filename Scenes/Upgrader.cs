@@ -86,6 +86,8 @@ namespace ProjectTheW.Scenes
                 panelY = Utils.Lerp(panelY, Raylib.GetScreenHeight() + (MARGIN * (int)Utils.GetScale()), 16 * deltaTime);
                 return;
             }
+
+            // Плавное выезжание панели
             if (Visible) panelY = Utils.Lerp(panelY, MARGIN, 16 * deltaTime);
 
             foreach (var button in buttons.ToArray())
@@ -139,7 +141,7 @@ namespace ProjectTheW.Scenes
             }
             return "";
         }
-
+        
         void CreateButtons()
         {
             for (int i = 0; i < texts.Length; i++)
@@ -152,6 +154,7 @@ namespace ProjectTheW.Scenes
         {
             Visible = true;
             Program.Paused = true;
+            Raylib.PlaySoundMulti(LoadedSounds.GetSound("powerup"));
         }
 
         public void Hide()

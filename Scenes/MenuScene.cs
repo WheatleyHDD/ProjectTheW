@@ -57,15 +57,18 @@ namespace ProjectTheW.Scenes
                 button.Update();
         }
 
-        void DrawLogo(string text, int fontSize) =>
-            Raylib.DrawText(text, Raylib.GetScreenWidth() / 2 - text.Length * (fontSize - text.Length) / 2,
-                fontSize, fontSize, Color.BLACK);
+        void DrawLogo(string text, int fontSize)
+        {
+            var mText = Raylib.MeasureText(text, fontSize);
+            Raylib.DrawText(text, Raylib.GetScreenWidth() / 2 - mText / 2,
+                50 - fontSize / (int)Utils.GetScale() * 2, fontSize, Color.BLACK);
+        }
 
         public override void Draw()
         {
             base.Draw();
             Raylib.ClearBackground(Raylib.ColorFromHSV(bgHue, 0.6f, 0.6f));
-            DrawLogo(logoText, (int)(36 * Utils.GetScale() / 4));
+            DrawLogo(logoText, (int)(12 * Utils.GetScale()));
 
             DrawLeftPanel();
             if (selectedWeapon >= 0) DrawRightPanel();

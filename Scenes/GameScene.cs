@@ -143,26 +143,32 @@ namespace ProjectTheW.Scenes
             var txtPlayerLvl = "Player Level: " + PlayerLevel.ToString();
             var txtLvl = "Difficulty: " + StatsClass.Level.ToString();
 
-            var mPlayerLvl = Raylib.MeasureText(txtPlayerLvl, 8 * (int)Utils.GetScale());
-            var mLvl = Raylib.MeasureText(txtLvl, 8 * (int)Utils.GetScale());
+            var mPlayerLvl = Raylib.MeasureText(txtPlayerLvl, 8 * (int)Utils.GetScale()) + (9 * (int)Utils.GetScale());
+            var mLvl = Raylib.MeasureText(txtLvl, 8 * (int)Utils.GetScale()) + (9 * (int)Utils.GetScale());
 
             Raylib.DrawText(txtPlayerLvl, Raylib.GetScreenWidth() - mPlayerLvl,
-                Raylib.GetScreenHeight() - 16 * (int)Utils.GetScale(),
+                Raylib.GetScreenHeight() - 16 * (int)Utils.GetScale() - (6 * (int)Utils.GetScale()),
                 8 * (int)Utils.GetScale(), Color.WHITE);
             Raylib.DrawText(txtLvl, Raylib.GetScreenWidth() - mLvl,
-                Raylib.GetScreenHeight() - 8 * (int)Utils.GetScale(),
+                Raylib.GetScreenHeight() - 8 * (int)Utils.GetScale() - (4 * (int)Utils.GetScale()),
                 8 * (int)Utils.GetScale(), Color.WHITE);
         }
 
         void DrawProgress()
         {
-            Raylib.DrawRectangle(0, 0, Raylib.GetScreenWidth(), 4 * (int)Utils.GetScale(), Color.BLACK);
-            Raylib.DrawRectangle(0, 0, Raylib.GetScreenWidth() * LevelScore / (1 + ForLevelMult * PlayerLevel), 4 * (int)Utils.GetScale(), Color.RED);
+            Raylib.DrawRectangle(0, 0, Raylib.GetScreenWidth(), 2 * (int)Utils.GetScale(), Color.BLACK);
+            Raylib.DrawRectangle(0, 0, Raylib.GetScreenWidth() * LevelScore / (5 + ForLevelMult * PlayerLevel), 2 * (int)Utils.GetScale(), Color.DARKGREEN);
         }
 
         static public void AddObjectToPool(Entity entity) => objectPool.Add(entity);
         static public void RemoveObjectFromPool(Entity entity) => toRemovePool.Add(entity);
 
+        /// <summary>
+        /// Сбросить таймер и создать что-то
+        /// </summary>
+        /// <param name="timer">таймер (указатель)</param>
+        /// <param name="time">Время сбросв</param>
+        /// <param name="what">Что создать</param>
         public void ResetTimerAndSpawn(ref float timer, float time, string what)
         {
             timer = time;
@@ -195,6 +201,9 @@ namespace ProjectTheW.Scenes
             camera.UpdateZoom();
         }
 
+        /// <summary>
+        /// Сброс при перезагрузке
+        /// </summary>
         void ResetAll()
         {
             foreach (var obj in objectPool)
@@ -215,9 +224,9 @@ namespace ProjectTheW.Scenes
         public static void AddLevelScore(int score)
         {
             LevelScore += score;
-            if (LevelScore >= 1 + ForLevelMult * PlayerLevel)
+            if (LevelScore >= 5 + ForLevelMult * PlayerLevel)
             {
-                var diff = Math.Max((1 + ForLevelMult * PlayerLevel) - LevelScore, 0);
+                var diff = LevelScore - (5 + ForLevelMult * PlayerLevel);
                 PlayerLevel++;
                 LevelScore = diff;
                 up.Show();

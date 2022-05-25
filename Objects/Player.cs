@@ -97,7 +97,7 @@ namespace ProjectTheW.Objects
                 {
                     if (collision.Other.Data is BulletLoot bl)
                     {
-                        currentWeapon.AddAmmo(bl.AmmoCount);
+                        currentWeapon.AddAmmo(bl.AmmoCount * (1 + StatsClass.WeaponType));
                         bl.Remove();
                         Raylib.PlaySound(LoadedSounds.GetSound("pickup"));
                         return CollisionResponses.Cross;
@@ -105,7 +105,7 @@ namespace ProjectTheW.Objects
                     {
                         Scenes.GameScene.AddLevelScore(gl.Cost);
                         gl.Remove();
-                        Raylib.PlaySound(LoadedSounds.GetSound("pickup"));
+                        Raylib.PlaySound(LoadedSounds.GetSound("coin"));
                         return CollisionResponses.Cross;
                     }
                 }
@@ -167,6 +167,7 @@ namespace ProjectTheW.Objects
         void DarkTimerCalc(float dt)
         {
             if (darkScreenTimer >= 3) {
+                Scenes.GameScene.world.Remove(body);
                 Program.CurrentScene = new Scenes.GameOverScreen();
                 return;
             }

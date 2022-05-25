@@ -15,10 +15,14 @@ namespace ProjectTheW
             Raylib.InitWindow(1280, 720, "Project The W");
             Raylib.InitAudioDevice();
 
+            // Сбивается UI, но игра запускается без рамок
+            // Raylib.SetWindowState(ConfigFlags.FLAG_WINDOW_UNDECORATED);
+
             Raylib.SetTargetFPS(60);
 
             Raylib.SetExitKey(KeyboardKey.KEY_NULL);
 
+            // Загрузка ресурсов в память
             LoadedTextures.LoadAll();
             LoadedSounds.LoadAll();
             LoadedMusic.LoadAll();
@@ -39,6 +43,7 @@ namespace ProjectTheW
                 Raylib.EndDrawing();
             }
 
+            // Выгрузка ресурсов из памяти
             LoadedTextures.UnloadAll();
             LoadedSounds.UnloadAll();
             LoadedMusic.UnloadAll();
