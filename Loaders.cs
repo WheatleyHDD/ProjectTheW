@@ -31,6 +31,7 @@ namespace ProjectTheW
             loadedSprites.Add("gems1", Raylib.LoadTexture("resources/sprites/gems/1.png"));
             loadedSprites.Add("gems2", Raylib.LoadTexture("resources/sprites/gems/2.png"));
             loadedSprites.Add("gems3", Raylib.LoadTexture("resources/sprites/gems/3.png"));
+            loadedSprites.Add("tutorial", Raylib.LoadTexture("resources/sprites/controls.png"));
         }
 
         public static Texture2D GetTexture(string name) => loadedSprites[name];

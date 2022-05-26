@@ -38,7 +38,7 @@ namespace ProjectTheW.Objects
                         || collision.Other.HasTag(Tags.Loot)) return CollisionResponses.None;
                     if (collision.Other.HasTag(Tags.Enemy) && collision.Other.Data is EnemyClass ec)
                     {
-                        ec.Hurt(dmg);
+                        ec.Hurt(dmg, velocity / new Vector2(moveSpeed));
                         Remove();
                     }
                     if (collision.Other.HasTag(Tags.Solid)) Remove();

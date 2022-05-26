@@ -7,18 +7,20 @@ namespace ProjectTheW.Scenes
 {
     internal class GameScene : Scene
     {
-        static public World world = new World(768, 768, 16);
+        static public World world = new(768, 768, 16);
         static Upgrader up;
 
         Player player;
-        Camera camera = new Camera(new Vector2(384, 384));
+        readonly Camera camera = new(new Vector2(384, 384));
+
+        Color controlsColor = Color.WHITE;
 
         Music music = LoadedMusic.GetMusic("game");
 
         Texture2D roomTexture;
 
-        static public List<Entity> objectPool = new List<Entity>();
-        static List<Entity> toRemovePool = new List<Entity>();
+        static public List<Entity> objectPool = new();
+        static List<Entity> toRemovePool = new();
 
         const int ForLevelMult = 10;
         public static int PlayerLevel { get; private set; }
@@ -79,6 +81,8 @@ namespace ProjectTheW.Scenes
                 Raylib.UpdateMusicStream(music);
                 CountDown.TimeTick(deltaTime);
                 SpawnControl(deltaTime);
+                if (controlsColor.a > 0)
+                    controlsColor.a = (byte)Math.Max(Math.Abs(CountDown.Time - 15) * 17, 0);
             }
 
             foreach (var entity in objectPool.ToArray())
@@ -116,6 +120,10 @@ namespace ProjectTheW.Scenes
             Raylib.BeginMode2D(camera.Cam);
 
             Raylib.DrawTexture(roomTexture, 0, 0, Color.WHITE);
+
+            Raylib.DrawTexturePro(LoadedTextures.GetTexture("tutorial"), new Rectangle(0, 0, 320, 180),
+                new Rectangle(384, 384, 320, 180), new Vector2(160, 90), 0, controlsColor);
+
             player.Draw();
             foreach(var entity in objectPool)
                 entity?.Draw();
@@ -125,6 +133,7 @@ namespace ProjectTheW.Scenes
             DrawTime();
             DrawProgress();
             DrawSomeInfo();
+
             up.Draw();
 
             player.DrawUI();

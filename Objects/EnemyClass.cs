@@ -69,11 +69,12 @@ namespace ProjectTheW.Objects
         /// Нанести урон
         /// </summary>
         /// <param name="removeHp">наносимый урон</param>
-        public void Hurt(int removeHp)
+        /// <param name="directory">направление пули</param>
+        public void Hurt(int removeHp, Vector2 directory)
         {
             Scenes.GameScene.AddObjectToPool(new DeathParticle(position - hitbox.Size / 2f));
             hurtTimer = 0.1f;
-            velocity += -(velocity / new Vector2(moveSpeed)) * StatsClass.BulletPush * 30f * weight/3f;
+            velocity += directory * StatsClass.BulletPush * 30f * weight/3f;
             hp -= removeHp;
             if (hp <= 0) Die();
         }
