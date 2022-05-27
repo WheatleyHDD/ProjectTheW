@@ -215,8 +215,8 @@ namespace ProjectTheW.Objects
 
         public void DrawUI()
         {
-            Raylib.DrawText(currentWeapon.WeaponName, 12, Raylib.GetScreenHeight()-42, 8 * (int)Utils.GetScale(), Color.WHITE);
-            Raylib.DrawText("Ammo: " + currentWeapon.AmmoCount.ToString(), 12, Raylib.GetScreenHeight() - 74, 5 * (int)Utils.GetScale(), Color.WHITE);
+            Raylib.DrawText(currentWeapon.WeaponName, 12, Raylib.GetScreenHeight()-42, 10 * (int)Utils.GetScale(), Color.WHITE);
+            Raylib.DrawText("Ammo: " + currentWeapon.AmmoCount.ToString(), 12, Raylib.GetScreenHeight() - 74, 7 * (int)Utils.GetScale(), Color.WHITE);
 
             var scale = Utils.GetScale() * 2 / 3;
             for (int heartI = 0; heartI < StatsClass.PlayerHealth; heartI++)
